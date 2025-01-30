@@ -132,7 +132,7 @@ class MicrosoftAuthFlow {
   }
 
   async getMinecraftBedrockServicesToken ({ version }) {
-    const cache = await this.mcs.getCachedAccessToken()
+    const cache = await this.mcs.getCachedAccessToken(version)
 
     if (cache.valid) {
       return cache.data

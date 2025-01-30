@@ -1,15 +1,15 @@
 const debug = require('debug')('prismarine-auth')
 
 const { Endpoints } = require('../common/Constants')
-const { checkStatus } = require('../common/Util')
+const { checkStatus, createHash } = require('../common/Util')
 
 class MinecraftBedrockServicesTokenManager {
   constructor (cache) {
     this.cache = cache
   }
 
-  async getCachedAccessToken () {
-    const { mcs: token } = await this.cache.getCached()
+  async getCachedAccessToken (version = '1.21.51') {
+    const { [createHash(version)]: token } = await this.cache.getCached()
     debug('[mcs] token cache', token)
 
     if (!token) return { valid: false }
@@ -25,13 +25,14 @@ class MinecraftBedrockServicesTokenManager {
   }
 
   async getAccessToken (sessionTicket, options = {}) {
+    const version = options.version ?? '1.21.51'
     const response = await fetch(Endpoints.MinecraftServicesSessionStart, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         device: {
           applicationType: options.applicationType ?? 'MinecraftPE',
-          gameVersion: options.version ?? '1.20.62',
+          gameVersion: version,
           id: options.deviceId ?? 'c1681ad3-415e-30cd-abd3-3b8f51e771d1',
           memory: options.deviceMemory ?? String(8 * (1024 * 1024 * 1024)),
           platform: options.platform ?? 'Windows10',
@@ -56,7 +57,7 @@ class MinecraftBedrockServicesTokenManager {
 
     debug('[mc] mc-services token response', tokenResponse)
 
-    await this.setCachedToken({ mcs: tokenResponse })
+    await this.setCachedToken({ [createHash(version)]: tokenResponse })
 
     return tokenResponse
   }
