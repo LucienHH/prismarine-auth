@@ -131,7 +131,7 @@ class MicrosoftAuthFlow {
     return playfab
   }
 
-  async getMinecraftBedrockServicesToken ({ verison }) {
+  async getMinecraftBedrockServicesToken ({ version }) {
     const cache = await this.mcs.getCachedAccessToken()
 
     if (cache.valid) {
@@ -140,7 +140,7 @@ class MicrosoftAuthFlow {
 
     const playfab = await this.getPlayfabLogin()
 
-    const mcs = await this.mcs.getAccessToken(playfab.SessionTicket, { verison })
+    const mcs = await this.mcs.getAccessToken(playfab.SessionTicket, { version })
 
     return mcs
   }
