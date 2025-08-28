@@ -1,5 +1,23 @@
 ## History
 
+### 2.7.0
+* [Add methods for fetching PlayFab and Minecraft Service tokens  (#107)](https://github.com/PrismarineJS/prismarine-auth/commit/1402f43dae29c8ffe65ffa2840b27542c06767ca) (thanks @LucienHH)
+
+### 2.6.0
+* [Bump mocha from 10.8.2 to 11.0.1 (#112)](https://github.com/PrismarineJS/prismarine-auth/commit/c5a13a05a34da8b9821c19eda900eca3543f89d3) (thanks @dependabot[bot])
+* [Remove node-fetch in favor of the Node.js built-in fetch() function (#118)](https://github.com/PrismarineJS/prismarine-auth/commit/73634a7ea20ed20e9e7403bfd142534fd786179b) (thanks @extremeheat)
+
+### 2.5.1
+* [Remove jose dependency (#103)](https://github.com/PrismarineJS/prismarine-auth/commit/e70f42efddf01d4edeb3a3bb53c19cb76fd66ad0) (thanks @bluefoxy009)
+
+### 2.5.0
+* [Update mcpc endpoint for entitlements check (#101)](https://github.com/PrismarineJS/prismarine-auth/commit/d7ac3def2b9b9c14b2565581f4cf87f2f92fa188) (thanks @frej4189)
+* [Add a forceRefresh option to Authflow (#100)](https://github.com/PrismarineJS/prismarine-auth/commit/01c826692494efaad5540446bd582e094a41fbd8) (thanks @extremeheat)
+* [Add 3 MC authTitles (#99)](https://github.com/PrismarineJS/prismarine-auth/commit/b84c345770242d23ce35e8b943573936f86e4047) (thanks @w0ahL)
+
+### 2.4.2
+* [Fix CI, default to `live` over `msal` flow (#97)](https://github.com/PrismarineJS/prismarine-auth/commit/e693bcbc9123dd05fef77dc9032b0a8adad9f2df) (thanks @extremeheat)
+
 ### 2.4.1
 * [Match Titles enum with exported Titles (#93)](https://github.com/PrismarineJS/prismarine-auth/commit/76e3f468bf78ada1c525d0aa9906df3f27e5c772) (thanks @LucienHH)
 
