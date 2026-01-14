@@ -60,6 +60,21 @@ class XboxTokenManager {
     else throw new Error(`Xbox Live authentication failed to obtain a XSTS token. XErr: ${errorCode}\n${JSON.stringify(response)}`)
   }
 
+  async parseFetchResponse (response) {
+    if (response.ok) {
+      return { error: false, data: await response.json(), response }
+    }
+
+    let errorResponse = {}
+    try {
+      errorResponse = await response.json()
+    } catch (e) {
+      debug('Failed to parse error response as JSON:', e.message)
+    }
+
+    return { error: true, data: errorResponse, response }
+  }
+
   async getUserToken (accessToken, azure) {
     debug('[xbl] obtaining xbox token with ms token', accessToken)
     const preamble = azure ? 'd=' : 't='
@@ -152,18 +167,22 @@ class XboxTokenManager {
     const headers = { Signature: signature }
 
     const req = await fetch(Endpoints.xbox.sisuAuthorize, { method: 'post', headers, body })
-    const ret = await req.json()
-    if (!req.ok) this.checkTokenError(parseInt(req.headers.get('x-err')), ret)
+    const ret = await this.parseFetchResponse(req)
+
+    if (ret.error) {
+      const errorCode = parseInt(ret.response.headers.get('x-err'))
+      this.checkTokenError(errorCode, ret.data)
+    }
 
     debug('Sisu Auth Response', ret)
     const xsts = {
-      userXUID: ret.AuthorizationToken.DisplayClaims.xui[0].xid || null,
-      userHash: ret.AuthorizationToken.DisplayClaims.xui[0].uhs,
-      XSTSToken: ret.AuthorizationToken.Token,
-      expiresOn: ret.AuthorizationToken.NotAfter
+      userXUID: ret.data.AuthorizationToken.DisplayClaims.xui[0].xid || null,
+      userHash: ret.data.AuthorizationToken.DisplayClaims.xui[0].uhs,
+      XSTSToken: ret.data.AuthorizationToken.Token,
+      expiresOn: ret.data.AuthorizationToken.NotAfter
     }
 
-    await this.setCachedToken({ userToken: ret.UserToken, titleToken: ret.TitleToken, [createHash(options.relyingParty)]: xsts })
+    await this.setCachedToken({ userToken: ret.data.UserToken, titleToken: ret.data.TitleToken, [createHash(options.relyingParty)]: xsts })
 
     debug('[xbl] xsts', xsts)
     return xsts
@@ -191,14 +210,18 @@ class XboxTokenManager {
     const headers = { ...this.headers, Signature: signature }
 
     const req = await fetch(Endpoints.xbox.xstsAuthorize, { method: 'post', headers, body })
-    const ret = await req.json()
-    if (!req.ok) this.checkTokenError(ret.XErr, ret)
+    const ret = await this.parseFetchResponse(req)
+
+    if (ret.error) {
+      const errorCode = ret.data.XErr
+      this.checkTokenError(errorCode, ret.data)
+    }
 
     const xsts = {
-      userXUID: ret.DisplayClaims.xui[0].xid || null,
-      userHash: ret.DisplayClaims.xui[0].uhs,
-      XSTSToken: ret.Token,
-      expiresOn: ret.NotAfter
+      userXUID: ret.data.DisplayClaims.xui[0].xid || null,
+      userHash: ret.data.DisplayClaims.xui[0].uhs,
+      XSTSToken: ret.data.Token,
+      expiresOn: ret.data.NotAfter
     }
 
     await this.setCachedToken({ [createHash(options.relyingParty)]: xsts })

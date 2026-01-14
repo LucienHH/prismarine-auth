@@ -3,15 +3,15 @@ const { Endpoints } = require('../common/Constants')
 const { checkStatus } = require('../common/Util')
 
 class PlayfabTokenManager {
-  constructor(cache) {
+  constructor (cache) {
     this.cache = cache
   }
 
-  async setCachedAccessToken(data) {
+  async setCachedAccessToken (data) {
     await this.cache.setCachedPartial(data)
   }
 
-  async getCachedAccessToken() {
+  async getCachedAccessToken () {
     const { pfb: cache } = await this.cache.getCached()
     debug('[pf] token cache', cache)
     if (!cache) return
@@ -21,7 +21,7 @@ class PlayfabTokenManager {
     return { valid, until: expires, data: cache }
   }
 
-  async getAccessToken(xsts) {
+  async getAccessToken (xsts) {
     const response = await fetch(Endpoints.PlayfabLoginWithXbox, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
