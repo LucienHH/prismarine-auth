@@ -1,7 +1,5 @@
 const debug = require('debug')('prismarine-auth')
-
 const { Endpoints } = require('../common/Constants')
-const { checkStatus } = require('../common/Util')
 
 class PlayfabTokenManager {
   constructor (cache) {
@@ -14,17 +12,11 @@ class PlayfabTokenManager {
 
   async getCachedAccessToken () {
     const { pfb: cache } = await this.cache.getCached()
-
     debug('[pf] token cache', cache)
-
     if (!cache) return
-
     const expires = new Date(cache.EntityToken.TokenExpiration)
-
     const remaining = expires - Date.now()
-
     const valid = remaining > 1000
-
     return { valid, until: expires, data: cache }
   }
 
@@ -56,11 +48,11 @@ class PlayfabTokenManager {
         TitleId: '20CA2',
         XboxToken: `XBL3.0 x=${xsts.userHash};${xsts.XSTSToken}`
       })
-    }).then(checkStatus)
+    })
 
-    await this.setCachedAccessToken({ pfb: response.data })
-
-    return response.data
+    const data = await response.json()
+    await this.setCachedAccessToken({ pfb: data.data })
+    return data.data
   }
 }
 
